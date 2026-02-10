@@ -1,1 +1,1 @@
-web: gunicorn Lunex.wsgi
+web: gunicorn backend.wsgi
