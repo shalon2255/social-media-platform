@@ -25,8 +25,11 @@ SECRET_KEY = 'django-insecure--m0(yq)pb(y!9&9(79w9z$479vp2s)f+^a(b_p(3x*a(93s6g&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+import os
+import dj_database_url
+from pathlib import Path
 
 # Application definition
 
@@ -64,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
      "corsheaders.middleware.CorsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -113,7 +118,13 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
     }
 }
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
