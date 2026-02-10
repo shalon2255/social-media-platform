@@ -1,0 +1,3 @@
+- [ ] Remove Feed, Create, Profile buttons from MainLayout.jsx navbar
+- [ ] Add useNavigate import to Feed.jsx
+- [ ] Add the three buttons to Feed.jsx tabs section next to the filter buttons
