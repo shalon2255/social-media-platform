@@ -114,10 +114,8 @@ export default function Register() {
             <div className="space-y-6">
               <div className="relative">
                 <h1 className="text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 relative">
-                  VIBE
-                  <span className="block text-6xl mt-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text">
-                    CONNECT
-                  </span>
+                  Lunex
+                  
                   <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-emerald-500 opacity-20 blur-2xl"></div>
                 </h1>
               </div>

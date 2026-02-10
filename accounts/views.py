@@ -82,7 +82,10 @@ from rest_framework.permissions import IsAuthenticated
 # --------------------
 # PROFILES
 # --------------------
-class MeView(RetrieveAPIView):
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated
+
+class MeView(RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -108,7 +111,7 @@ from .serializers import ProfileSerializer
 class EditProfileView(RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]  # 🔥 REQUIRED
+    parser_classes = [MultiPartParser, FormParser]  
 
     def get_object(self):
         return self.request.user.profile

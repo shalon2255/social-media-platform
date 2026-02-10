@@ -1,6 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import lunexLogo from "./Lunex_logo.png";
 
 export default function MainLayout() {
   const navigate = useNavigate();
@@ -40,11 +41,15 @@ export default function MainLayout() {
               className="flex items-center space-x-3 cursor-pointer"
               onClick={() => navigate("/feed")}
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
-                <span className="text-xl font-bold">V</span>
+              <div className="w-16 h-16 flex items-center justify-center">
+                <img 
+                  src={lunexLogo} 
+                  alt="Lunex Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                VibeConnect
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-lime-400 to-green-400 bg-clip-text text-transparent">
+                Lunex
               </h1>
             </div>
 
@@ -68,7 +73,7 @@ export default function MainLayout() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSearchNavigate();
                     }}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-lime-500"
                   />
                 </div>
               </div>
@@ -94,7 +99,7 @@ export default function MainLayout() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSearchNavigate();
                 }}
-                className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-lime-500"
               />
             </div>
 

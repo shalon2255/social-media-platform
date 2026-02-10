@@ -71,6 +71,13 @@ export default function Profile() {
     return () => window.removeEventListener("follow-updated", sync);
   }, []);
 
+  // sync after profile edit
+  useEffect(() => {
+    const sync = () => fetchMyProfile();
+    window.addEventListener("profile-updated", sync);
+    return () => window.removeEventListener("profile-updated", sync);
+  }, []);
+
   // =========================
   // LIKE / UNLIKE (OPTIMISTIC)
   // =========================
@@ -115,11 +122,11 @@ export default function Profile() {
 
         {/* PROFILE HEADER */}
         <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
 
             {/* LEFT */}
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-700">
+            <div className="flex items-start gap-4">
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-700">
                 <img
                   src={
                     profileUser?.profile_image
@@ -131,14 +138,21 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
-                <h1 className="text-2xl font-bold">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold mb-1">
                   @{profileUser?.username}
                 </h1>
 
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-sm mb-3">
                   {posts.length} Posts · {followersCount} Followers · {followingCount} Following
                 </p>
+
+                {/* BIO */}
+                {profileUser?.bio && (
+                  <p className="text-gray-300 text-sm max-w-md">
+                    {profileUser.bio}
+                  </p>
+                )}
               </div>
             </div>
 
