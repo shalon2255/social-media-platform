@@ -26,7 +26,7 @@ export default function Login() {
 
     try {
       // LOGIN API CALL USING AXIOS INSTANCE
-      const res = await axiosInstance.post("/api/accounts/login/", {
+      const res = await axiosInstance.post("/accounts/login/", {
         username: formData.username,
         password: formData.password,
       });
@@ -36,7 +36,7 @@ export default function Login() {
       localStorage.setItem("user_id", res.data.user_id);
 
       // GET USER DETAILS
-      const me = await axiosInstance.get("/api/accounts/me/");
+      const me = await axiosInstance.get("/accounts/me/");
 
       alert("Login Success ✅");
 
