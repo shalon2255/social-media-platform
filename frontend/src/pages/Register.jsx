@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Zap, Users, Shield } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
@@ -33,11 +33,11 @@ export default function Register() {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/accounts/register/", {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
+      await axiosInstance.post("/api/accounts/register/", {
+  username: formData.username,
+  email: formData.email,
+  password: formData.password,
+});
 
       alert("Account created ✅ Now login");
       navigate("/login");

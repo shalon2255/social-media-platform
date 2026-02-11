@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap, Users, Shield } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -25,7 +25,8 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/accounts/login/", {
+      // LOGIN API CALL USING AXIOS INSTANCE
+      const res = await axiosInstance.post("/api/accounts/login/", {
         username: formData.username,
         password: formData.password,
       });
@@ -34,14 +35,8 @@ export default function Login() {
       localStorage.setItem("refresh", res.data.refresh);
       localStorage.setItem("user_id", res.data.user_id);
 
-      const me = await axios.get(
-        "http://127.0.0.1:8000/api/accounts/me/",
-        {
-          headers: {
-            Authorization: `Bearer ${res.data.access}`,
-          },
-        }
-      );
+      // GET USER DETAILS
+      const me = await axiosInstance.get("/api/accounts/me/");
 
       alert("Login Success ✅");
 
@@ -175,13 +170,11 @@ export default function Login() {
                   <ArrowRight />
                 </button>
 
-                {/* FIXED SECTION */}
                 <div className="mt-6 text-center">
                   <p className="text-gray-400 text-sm">
                     Don’t have an account?
                   </p>
 
-                  {/* 🔥 FIX APPLIED HERE */}
                   <button
                     type="button"
                     onClick={() => navigate("/")}
