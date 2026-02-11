@@ -23,10 +23,9 @@ axiosInstance.interceptors.response.use(
       try {
         const refresh = localStorage.getItem("refresh");
 
-        const res = await axios.post("http://127.0.0.1:8000/api/accounts/refresh/", {
-          refresh: refresh,
-        });
-
+     const res = await axiosInstance.post("/api/accounts/refresh/", {
+  refresh: refresh,
+});
         localStorage.setItem("access", res.data.access);
 
         originalRequest.headers.Authorization = `Bearer ${res.data.access}`;

@@ -24,23 +24,23 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
+<Routes>
      <Route path="/" element={<Register />} />
-<Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />}/>
          <Route element={<ProtectedRoute> <MainLayout /></ProtectedRoute>}>
           <Route path="/feed" element={<Feed/>} />
            <Route path="/create" element={<CreatePost />} />
             <Route path="/profile" element={<Profile />} />
-              <Route path="/mypost/:id" element={<MyPostDetail />} />
-              <Route path="/users/:userId" element={<UserProfile />} />
-              <Route path="/profile/edit" element={<EditProfile />} />
-              <Route path="/search" element={<Search/>} />
-        </Route>
-        <Route path="/admin" element={<AdminLayout />}>
-  <Route index element={<AdminDashboard />} />
-  <Route path="users" element={<AdminUsers />} />
-   <Route path="activity" element={<AdminActivity/>} />
-     <Route path="posts" element={<AdminPosts />} />
+            <Route path="/mypost/:id" element={<MyPostDetail />} />
+            <Route path="/users/:userId" element={<UserProfile />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
+            <Route path="/search" element={<Search/>} />
+      </Route>
+        <Route path="/admin" element={<AdminLayout/> }>
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="activity" element={<AdminActivity/>} />
+        <Route path="posts" element={<AdminPosts />} />
 
 </Route>
            
