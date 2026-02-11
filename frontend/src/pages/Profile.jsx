@@ -43,7 +43,7 @@ export default function Profile() {
       setLoading(true);
 
       const [userRes, postsRes] = await Promise.all([
-        axiosInstance.get("accounts/me/"),
+        axiosInstance.get("/api/accounts/me/"),
         axiosInstance.get("posts/?mine=1"),
       ]);
 
