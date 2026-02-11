@@ -41,19 +41,32 @@ export default function Profile() {
   const fetchMyProfile = async () => {
     try {
       setLoading(true);
+      setPosts([]); // Clear posts while loading
 
       const [userRes, postsRes] = await Promise.all([
-        axiosInstance.get("/api/accounts/me/"),
-        axiosInstance.get("posts/?mine=1"),
+        axiosInstance.get("/accounts/me/"),
+        axiosInstance.get("/posts/?mine=1"),
       ]);
 
+      console.log("✅ Profile Data Updated:", userRes.data);
+      console.log("📊 Followers:", userRes.data.followers_count, "Following:", userRes.data.following_count);
+
       setProfileUser(userRes.data);
-      setFollowersCount(userRes.data.followers_count);
-      setFollowingCount(userRes.data.following_count);
-      setPosts(postsRes.data);
+      setFollowersCount(userRes.data.followers_count || 0);
+      setFollowingCount(userRes.data.following_count || 0);
+      
+      // Handle both array and paginated response
+      if (Array.isArray(postsRes.data)) {
+        setPosts(postsRes.data);
+      } else if (postsRes.data?.results && Array.isArray(postsRes.data.results)) {
+        setPosts(postsRes.data.results);
+      } else {
+        setPosts([]);
+      }
 
     } catch (err) {
-      console.error("PROFILE ERROR:", err.response || err);
+      console.error("❌ PROFILE ERROR:", err.response?.data || err.message);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -66,16 +79,44 @@ export default function Profile() {
 
   // sync after follow/unfollow anywhere
   useEffect(() => {
-    const sync = () => fetchMyProfile();
+    const sync = () => {
+      console.log("🔄 Follow status updated, refreshing profile...");
+      fetchMyProfile();
+    };
     window.addEventListener("follow-updated", sync);
     return () => window.removeEventListener("follow-updated", sync);
   }, []);
 
   // sync after profile edit
   useEffect(() => {
-    const sync = () => fetchMyProfile();
+    const sync = () => {
+      console.log("🔄 Profile edited, refreshing...");
+      fetchMyProfile();
+    };
     window.addEventListener("profile-updated", sync);
     return () => window.removeEventListener("profile-updated", sync);
+  }, []);
+
+  // sync after post creation
+  useEffect(() => {
+    const sync = () => {
+      console.log("🔄 New post created, refreshing...");
+      fetchMyProfile();
+    };
+    window.addEventListener("post-created", sync);
+    return () => window.removeEventListener("post-created", sync);
+  }, []);
+
+  // Auto refresh followers/following every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      axiosInstance.get("/accounts/me/").then((res) => {
+        setFollowersCount(res.data.followers_count || 0);
+        setFollowingCount(res.data.following_count || 0);
+      }).catch(err => console.error("Auto-refresh error:", err));
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // =========================
@@ -95,9 +136,11 @@ export default function Profile() {
     );
 
     try {
-      await axiosInstance.post(`posts/${postId}/like/`);
+      await axiosInstance.post(`/posts/${postId}/like/`);
     } catch (err) {
-      console.error("LIKE ERROR:", err.response || err);
+      console.error("LIKE ERROR:", err.response?.data || err.message);
+      // Revert on error
+      fetchMyProfile();
     }
   };
 
@@ -108,10 +151,11 @@ export default function Profile() {
     if (!window.confirm("Delete this post?")) return;
 
     try {
-      await axiosInstance.delete(`posts/${postId}/`);
+      await axiosInstance.delete(`/posts/${postId}/`);
       setOpenMenuId(null);
       fetchMyProfile();
-    } catch {
+    } catch (err) {
+      console.error("DELETE ERROR:", err.response?.data || err.message);
       alert("Delete failed ❌");
     }
   };
@@ -122,61 +166,43 @@ export default function Profile() {
 
         {/* PROFILE HEADER */}
         <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 mb-6">
-          <div className="flex items-start justify-between">
-
-            {/* LEFT */}
-            <div className="flex items-start gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-700">
-                <img
-                  src={
-                    profileUser?.profile_image
-                      ? `${import.meta.env.VITE_API_BASE_URL}${profileUser.profile_image}`
-                      : "/default-avatar.png"
-                  }
-                  alt="profile"
-                  className="w-full h-full object-cover"
-                />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                <User className="w-7 h-7" />
               </div>
 
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold mb-1">
-                  @{profileUser?.username}
+              <div>
+                <h1 className="text-2xl font-bold pt-3 pe-3">
+                  {profileUser?.username ? profileUser.username : "Loading..."}
                 </h1>
 
-                <p className="text-gray-400 text-sm mb-3">
+                <p className="text-gray-400 text-sm ">
                   {posts.length} Posts · {followersCount} Followers · {followingCount} Following
                 </p>
 
-                {/* BIO */}
-                {profileUser?.bio && (
-                  <p className="text-gray-300 text-sm max-w-md">
-                    {profileUser.bio}
-                  </p>
-                )}
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => navigate("/profile/edit")}
+                    className="px-4 py-1 text-xs font-semibold border border-gray-600 rounded-lg hover:bg-white/5 transition"
+                  >
+                    Edit Profile
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-1 text-xs font-semibold border border-red-700 text-red-400 rounded-lg hover:bg-red-500/10 transition"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* RIGHT - EDIT + LOGOUT */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate("/profile/edit")}
-                className="px-4 py-2 border border-gray-700 rounded-xl hover:bg-white/10"
-              >
-                Edit Profile
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 border border-red-700 text-red-400 rounded-xl hover:bg-red-500/10"
-              >
-                Logout
-              </button>
-            </div>
-
           </div>
         </div>
 
-        {/* POSTS SECTION */}
+        {/* POSTS */}
         <div className="bg-gray-900/30 border border-gray-800 rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <ImageIcon className="w-5 h-5 text-purple-400" />
@@ -184,43 +210,47 @@ export default function Profile() {
           </div>
 
           {loading ? (
-            <div className="py-10 text-center text-gray-400">Loading…</div>
+            <div className="py-10 text-center text-gray-400">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+              <p className="mt-2">Loading posts…</p>
+            </div>
           ) : posts.length === 0 ? (
-            <div className="py-10 text-center text-gray-400">No posts yet 😢</div>
+            <div className="py-10 text-center text-gray-400">
+              No posts yet 😶
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="relative bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden"
+                  className="bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden relative group"
                 >
-
                   {/* MENU */}
                   <div className="absolute top-2 right-2 z-20">
                     <button
                       onClick={() =>
                         setOpenMenuId(openMenuId === post.id ? null : post.id)
                       }
-                      className="p-2 rounded-lg bg-black/60"
+                      className="p-2 rounded-lg bg-black/60 hover:bg-black/80 transition"
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
 
                     {openMenuId === post.id && (
-                      <div className="absolute right-0 mt-2 w-36 bg-black border border-gray-700 rounded-xl overflow-hidden">
+                      <div className="absolute right-0 mt-2 w-32 bg-black border border-gray-700 rounded-lg overflow-hidden shadow-lg z-30">
                         <button
                           onClick={() =>
                             navigate(`/mypost/${post.id}`, {
                               state: { mode: "edit" },
                             })
                           }
-                          className="w-full px-4 py-3 text-left hover:bg-white/10"
+                          className="w-full px-3 py-2 text-xs text-left hover:bg-white/10 transition"
                         >
                           ✏️ Edit
                         </button>
                         <button
                           onClick={() => handleDeletePost(post.id)}
-                          className="w-full px-4 py-3 text-left hover:bg-red-500/20 text-red-400"
+                          className="w-full px-3 py-2 text-xs text-left hover:bg-red-500/20 text-red-400 transition"
                         >
                           🗑️ Delete
                         </button>
@@ -228,28 +258,27 @@ export default function Profile() {
                     )}
                   </div>
 
-                  {/* IMAGE */}
                   <img
                     src={post.image}
                     alt="post"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
+                    onError={(e) => {
+                      e.target.src = "/default-post.png";
+                    }}
                   />
 
-                  {/* CONTENT */}
                   <div className="p-4">
                     <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                       {post.caption || "No caption"}
                     </p>
 
-                    {/* ACTIONS */}
                     <div className="flex items-center gap-6 border-t border-gray-800 pt-3">
-
                       <button
                         onClick={() => handleLike(post.id)}
-                        className="flex items-center gap-1 hover:text-pink-500"
+                        className="flex items-center gap-1 hover:text-pink-500 transition text-sm"
                       >
                         <Heart
-                          className={`w-5 h-5 ${
+                          className={`w-5 h-5 transition ${
                             post.is_liked
                               ? "text-pink-500 fill-pink-500"
                               : ""
@@ -260,14 +289,19 @@ export default function Profile() {
 
                       <button
                         onClick={() => setActivePost(post)}
-                        className="flex items-center gap-1 hover:text-blue-500"
+                        className="flex items-center gap-1 hover:text-blue-400 transition text-sm"
                       >
                         <MessageCircle className="w-5 h-5" />
                         <span>{post.comments ?? 0}</span>
                       </button>
 
-                      <Share2 className="w-5 h-5 hover:text-green-500" />
-                      <Bookmark className="w-5 h-5 hover:text-yellow-500 ml-auto" />
+                      <button className="flex items-center gap-1 hover:text-green-500 transition text-sm">
+                        <Share2 className="w-5 h-5" />
+                      </button>
+
+                      <button className="flex items-center gap-1 hover:text-yellow-500 transition text-sm ml-auto">
+                        <Bookmark className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -275,7 +309,6 @@ export default function Profile() {
             </div>
           )}
         </div>
-
       </main>
 
       {activePost && (
