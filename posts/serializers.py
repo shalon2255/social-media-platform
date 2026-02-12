@@ -39,13 +39,13 @@ class PostSerializer(serializers.ModelSerializer):
         return request and request.user == obj.user
 
     def get_likes(self, obj):
-        return obj.likes.count()   # ✅ FIXED
+        return obj.likes.count()  
 
     def get_is_liked(self, obj):
         request = self.context.get("request")
         if not request or request.user.is_anonymous:
             return False
-        return obj.likes.filter(user=request.user).exists()  # ✅ FIXED
+        return obj.likes.filter(user=request.user).exists() 
 
     def get_comments(self, obj):
         return obj.comments_set.count()
