@@ -66,11 +66,13 @@ useEffect(() => {
 
     try {
       setPosting(true);
-      const res = await axiosInstance.post(
-        `posts/${post.id}/comments/`,
-        { text }
-      );
-
+     const res = await axiosInstance.post(
+  "/comments/",
+  {
+    post: post.id,   
+    text: text,
+  }
+);
       setComments((prev) => [res.data, ...prev]);
       setText("");
       onRefresh(); // update count in feed/profile

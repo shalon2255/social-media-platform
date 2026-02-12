@@ -55,6 +55,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "user",
+            "post",
             "user_username",
             "text",
             "created_at",
