@@ -29,6 +29,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://lunex-backendd.onrender.com",
     "http://localhost:5173",
 ]
+
 import os
 import dj_database_url
 from pathlib import Path
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

