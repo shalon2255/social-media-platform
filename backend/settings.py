@@ -23,9 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--m0(yq)pb(y!9&9(79w9z$479vp2s)f+^a(b_p(3x*a(93s6g&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = ["https://lunex-backendd.onrender.com"]
 
 import os
 import dj_database_url
@@ -52,9 +51,9 @@ from datetime import timedelta
 import cloudinary
 
 cloudinary.config(
-    cloud_name="ddq4tcl2s",
-    api_key="917367354635163",
-    api_secret="6gY567tLqYAT48cg0AkQkat5ojY",
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
 )
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -76,11 +75,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
      "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.security.SecurityMiddleware',
+  
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+   
+ 
     "django.middleware.common.CommonMiddleware",
 ]
 REST_FRAMEWORK = {
@@ -119,7 +118,7 @@ load_dotenv()
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('postgresql://lunexuser:1jJG8ZehkWSwY2EYbPE5JfDUusFoQUQP@dpg-d65l0ua4d50c73c87le0-a.singapore-postgres.render.com/lunex')
+        default=os.environ.get("DATABASE_URL")
     )
 }
 STATIC_URL = '/static/'
