@@ -36,7 +36,7 @@ function formatTimeAgo(dateString) {
     if (isNaN(date.getTime())) {
       return "Just now";
     }
-
+console.log(post.image)
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const seconds = Math.floor(diffMs / 1000);
