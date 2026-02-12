@@ -3,6 +3,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import PostCommentModal from "../components/PostCommentModal";
 
+
 import {
   Heart,
   MessageCircle,
@@ -75,35 +76,31 @@ export default function Feed() {
   // =========================
   // FETCH POSTS
   // =========================
+// =========================
+// FETCH POSTS
+// =========================
 const fetchPosts = async () => {
   try {
+    
     setIsLoading(true);
 
     const res = await axiosInstance.get("posts/");
     console.log("POSTS RESPONSE:", res.data);
 
-  setPosts([...res.data]);
+    setPosts(res.data);
 
   } catch (err) {
     console.log("FEED ERROR:", err.response || err);
   } finally {
-  setIsLoading(false);
-  console.log("SET LOADING FALSE");
-}
-  
+    setIsLoading(false);
+  }
 };
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  // =========================
-  // AUTO REFRESH TIME EVERY MINUTE
-  // =========================
+// 👇 ADD THIS
 useEffect(() => {
-  console.log("IS LOADING:", isLoading);
-  console.log("POSTS STATE:", posts);
-}, [posts, isLoading]);
+  fetchPosts();
+}, []);
+
   // =========================
   // USER NAVIGATION
   // =========================
@@ -144,6 +141,7 @@ useEffect(() => {
       console.log("LIKE ERROR:", err.response || err);
     }
   };
+  
 
   // =========================
   // FAKE SAVE POPUP
@@ -216,15 +214,16 @@ useEffect(() => {
                 </div>
 
                 {/* IMAGE - Smaller, maintains aspect ratio, fits in one view */}
-                <div className="w-full bg-black aspect-square flex items-center justify-center overflow-hidden">
-                 {post.image && (
-  <img
-    src={post.image}
-    alt="post"
-    className="w-full h-full object-contain"
-  />
-)}
-                </div>
+  <div className="w-full bg-black aspect-square flex items-center justify-center overflow-hidden">
+  {post.image && (
+    <img
+      src={post.image}
+      alt="post"
+      className="w-full h-full object-contain"
+    />
+  )}
+</div>
+            
 
                 {/* CAPTION - Aligned to left edge */}
                 <div className="px-4 pt-3 pb-2">

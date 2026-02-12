@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
       try {
         const refresh = localStorage.getItem("refresh");
 
-     const res = await axiosInstance.post("/api/accounts/refresh/", {
+     const res = await axiosInstance.post("accounts/refresh/", {
   refresh: refresh,
 });
         localStorage.setItem("access", res.data.access);
