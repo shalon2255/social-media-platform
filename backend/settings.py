@@ -28,9 +28,11 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     "https://lunex-backendd.onrender.com",
     "http://localhost:5173",
-    "https://lunex-psi.vercel.app",
+    
 ]
-
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 import os
 import dj_database_url
 from pathlib import Path
