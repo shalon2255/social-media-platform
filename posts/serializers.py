@@ -4,6 +4,7 @@ from .models import Post,Comment
 
 class PostSerializer(serializers.ModelSerializer):
     user_username = serializers.CharField(source="user.username", read_only=True)
+    image = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     likes = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
@@ -25,7 +26,14 @@ class PostSerializer(serializers.ModelSerializer):
             "comments",
         ]
         read_only_fields = ["user", "created_at"]
-
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.image:
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+    
     def get_is_owner(self, obj):
         request = self.context.get("request")
         return request and request.user == obj.user
