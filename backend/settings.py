@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     "https://lunex-backendd.onrender.com",
     "http://localhost:5173",
+    "https://lunex-psi.vercel.app",
 ]
 
 import os
