@@ -45,10 +45,19 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     "accounts",
     "posts",
-
+    'cloudinary',
+    'cloudinary_storage',
 ]
 from datetime import timedelta
+import cloudinary
 
+cloudinary.config(
+    cloud_name="ddq4tcl2s",
+    api_key="917367354635163",
+    api_secret="6gY567tLqYAT48cg0AkQkat5ojY",
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),

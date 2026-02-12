@@ -108,9 +108,9 @@ export default function Register() {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Cyberpunk Branding */}
+        
           <div className="hidden lg:flex flex-col justify-center space-y-10 px-8">
-            {/* Logo with Neon Effect */}
+            
             <div className="space-y-6">
               <div className="relative">
                 <h1 className="text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 relative">
@@ -124,7 +124,7 @@ export default function Register() {
               </p>
             </div>
 
-            {/* Feature Cards - Cyberpunk Style */}
+         
             <div className="space-y-4">
               <div className="group relative bg-gradient-to-r from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-emerald-500/20 rounded-lg p-6 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
@@ -170,18 +170,18 @@ export default function Register() {
             </div>
           </div>
 
-          {/* Right Side - Auth Form */}
+        
           <div className="w-full max-w-md mx-auto">
             <div className="relative group">
-              {/* Outer Glow */}
+        
               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
 
-              {/* Main Card */}
+     
               <div className="relative bg-gradient-to-br from-gray-900 to-black border border-emerald-500/30 rounded-2xl p-8 md:p-10">
-                {/* Mobile Logo */}
+            
                 <div className="lg:hidden text-center mb-8">
                   <h1 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                    VIBECONNECT
+                    Lunex
                   </h1>
                   <p className="text-gray-400 mt-2 font-mono text-sm">&gt; Join the network</p>
                 </div>
@@ -279,7 +279,6 @@ export default function Register() {
                     </div>
                   </button>
 
-                  {/* ✅ Already user */}
                   <div className="text-center mt-4">
                     <Link
                       to="/login"

@@ -173,11 +173,11 @@ export default function Profile() {
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold pt-3 pe-3">
+                <h1 className="text-2xl font-bold">
                   {profileUser?.username ? profileUser.username : "Loading..."}
                 </h1>
-
-                <p className="text-gray-400 text-sm ">
+        
+                <p className="text-gray-400 text-sm">
                   {posts.length} Posts · {followersCount} Followers · {followingCount} Following
                 </p>
 
@@ -258,15 +258,15 @@ export default function Profile() {
                     )}
                   </div>
 
-                  <img
-                    src={post.image}
-                    alt="post"
-                    className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
-                    onError={(e) => {
-                      e.target.src = "/default-post.png";
-                    }}
-                  />
-
+                 <img
+  src={post.image}
+  alt="post"
+  onClick={() => setActivePost(post)}
+  className="w-full h-48 object-cover group-hover:scale-105 transition duration-300 cursor-pointer"
+  onError={(e) => {
+    e.target.src = "/default-post.png";
+  }}
+/>
                   <div className="p-4">
                     <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                       {post.caption || "No caption"}

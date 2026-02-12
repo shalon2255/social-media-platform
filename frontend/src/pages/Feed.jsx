@@ -19,27 +19,48 @@ import {
 // TIME FORMATTER FUNCTION
 // =========================
 function formatTimeAgo(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
+  try {
+    // Handle empty or null dates
+    if (!dateString) {
+      return "Just now";
+    }
 
-  const seconds = Math.floor((now - date) / 1000);
+    // Convert to string in case it's something else
+    const dateStr = String(dateString).trim();
 
-  if (seconds < 60) return "Just now";
+    // Create date object
+    const date = new Date(dateStr);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return "Just now";
+    }
 
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const seconds = Math.floor(diffMs / 1000);
 
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+    if (seconds < 0) return "Just now";
+    if (seconds < 60) return "Just now";
 
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
 
-  return date.toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+
+    // Format as date
+    return date.toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+    });
+  } catch (error) {
+    return "Just now";
+  }
 }
 
 export default function Feed() {
@@ -54,18 +75,23 @@ export default function Feed() {
   // =========================
   // FETCH POSTS
   // =========================
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      const res = await axiosInstance.get("posts/");
-      setPosts(res.data);
-    } catch (err) {
-      console.log("FEED ERROR:", err.response || err);
-      alert("Error loading posts ❌");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const fetchPosts = async () => {
+  try {
+    setIsLoading(true);
+
+    const res = await axiosInstance.get("posts/");
+    console.log("POSTS RESPONSE:", res.data);
+
+  setPosts([...res.data]);
+
+  } catch (err) {
+    console.log("FEED ERROR:", err.response || err);
+  } finally {
+  setIsLoading(false);
+  console.log("SET LOADING FALSE");
+}
+  
+};
 
   useEffect(() => {
     fetchPosts();
@@ -74,14 +100,10 @@ export default function Feed() {
   // =========================
   // AUTO REFRESH TIME EVERY MINUTE
   // =========================
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPosts((prev) => [...prev]);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+useEffect(() => {
+  console.log("IS LOADING:", isLoading);
+  console.log("POSTS STATE:", posts);
+}, [posts, isLoading]);
   // =========================
   // USER NAVIGATION
   // =========================
@@ -132,7 +154,7 @@ export default function Feed() {
   };
 
   return (
-    <div className="flex gap-6 h-full">
+   <div className="flex gap-6 min-h-screen">
       {/* LEFT SIDEBAR - Hidden on mobile */}
       <aside className="hidden lg:block w-72 flex-shrink-0">
         <div className="bg-gray-900/30 border border-gray-800 rounded-2xl p-5 sticky top-0">
@@ -162,7 +184,7 @@ export default function Feed() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 px-4 sm:px-0">
             {posts.map((post) => (
               <div
                 key={post.id}
@@ -193,30 +215,34 @@ export default function Feed() {
                   </button>
                 </div>
 
-                {/* IMAGE - Original size */}
-                <img
-                  src={post.image}
-                  alt="post"
-                  className="w-full h-auto object-cover"
-                />
+                {/* IMAGE - Smaller, maintains aspect ratio, fits in one view */}
+                <div className="w-full bg-black aspect-square flex items-center justify-center overflow-hidden">
+                 {post.image && (
+  <img
+    src={post.image}
+    alt="post"
+    className="w-full h-full object-contain"
+  />
+)}
+                </div>
 
                 {/* CAPTION - Aligned to left edge */}
-                <div className="pl-4 pr-4 pt-3 pb-2">
-                  <p className="text-sm text-left">
+                <div className="px-4 pt-3 pb-2">
+                  <p className="text-sm text-left line-clamp-2">
                     <span className="font-semibold">@{post.user_username}</span>{" "}
                     <span className="text-gray-300">{post.caption || "No caption"}</span>
                   </p>
                 </div>
 
                 {/* ACTIONS */}
-                <div className="pl-4 pr-4 pb-4 flex justify-between items-center">
+                <div className="px-4 pb-4 flex justify-between items-center">
                   <div className="flex space-x-4">
                     <button
                       onClick={() => handleLike(post.id)}
                       className="flex items-center space-x-1 hover:text-pink-500 transition"
                     >
                       <Heart
-                        className={`w-6 h-6 ${
+                        className={`w-5 h-5 ${
                           post.is_liked ? "text-pink-500 fill-pink-500" : ""
                         }`}
                       />
@@ -227,12 +253,12 @@ export default function Feed() {
                       onClick={() => setActivePost(post)}
                       className="flex items-center space-x-1 hover:text-blue-500 transition"
                     >
-                      <MessageCircle className="w-6 h-6" />
+                      <MessageCircle className="w-5 h-5" />
                       <span className="text-sm">{post.comments ?? 0}</span>
                     </button>
 
                     <button className="hover:text-green-500 transition">
-                      <Share2 className="w-6 h-6" />
+                      <Share2 className="w-5 h-5" />
                     </button>
                   </div>
 
@@ -240,7 +266,7 @@ export default function Feed() {
                     onClick={handleFakeSave}
                     className="hover:text-yellow-500 transition"
                   >
-                    <Bookmark className="w-6 h-6" />
+                    <Bookmark className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -260,13 +286,17 @@ export default function Feed() {
         {/* Empty - reserved for future features */}
       </aside>
 
-      {/* COMMENT MODAL */}
+      {/* COMMENT MODAL - Mobile Full Screen, Desktop Modal */}
       {activePost && (
-        <PostCommentModal
-          post={activePost}
-          onClose={() => setActivePost(null)}
-          onRefresh={fetchPosts}
-        />
+        <div className="fixed inset-0 z-50 lg:fixed lg:inset-0 lg:flex lg:items-center lg:justify-center lg:bg-black/50">
+          <div className="h-full w-full lg:h-auto lg:w-auto lg:max-w-2xl">
+            <PostCommentModal
+              post={activePost}
+              onClose={() => setActivePost(null)}
+              onRefresh={fetchPosts}
+            />
+          </div>
+        </div>
       )}
 
       {/* SAVED POPUP */}
