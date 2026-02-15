@@ -120,7 +120,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if not created:
             like.delete()
 
-            # 🔥 LOG UNLIKE
+           
             ActivityLog.objects.create(
                 user=request.user,
                 action=f"Unliked post #{post.id}"
@@ -128,7 +128,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
             return Response({"liked": False})
 
-        # 🔥 LOG LIKE
+ 
         ActivityLog.objects.create(
             user=request.user,
             action=f"Liked post #{post.id}"
@@ -136,9 +136,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return Response({"liked": True})
 
-    # =========================
-    # SAVE / UNSAVE + LOG
-    # =========================
+
     @action(detail=True, methods=["post"])
     def save(self, request, pk=None):
         post = self.get_object()
@@ -151,7 +149,6 @@ class PostViewSet(viewsets.ModelViewSet):
         if not created:
             saved.delete()
 
-            # 🔥 LOG UNSAVE
             ActivityLog.objects.create(
                 user=request.user,
                 action=f"Unsaved post #{post.id}"
@@ -159,7 +156,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
             return Response({"saved": False})
 
-        # 🔥 LOG SAVE
+     
         ActivityLog.objects.create(
             user=request.user,
             action=f"Saved post #{post.id}"
@@ -172,11 +169,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        post_pk = self.kwargs.get("post_pk")  # ✅ Use post_pk
+        post_pk = self.kwargs.get("post_pk")  
         return Comment.objects.filter(post_id=post_pk)
 
     def perform_create(self, serializer):
-        post_pk = self.kwargs.get("post_pk")  # ✅ Use post_pk
+        post_pk = self.kwargs.get("post_pk")  
         post = get_object_or_404(Post, id=post_pk)
         serializer.save(user=self.request.user, post=post)
 
