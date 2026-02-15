@@ -1,21 +1,21 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_nested import routers 
+from rest_framework_nested import routers
 from .views import PostViewSet, CommentViewSet
 from accounts.adminviews.posts import AdminPostViewSet
 
-# Parent router for posts
+# ✅ Create parent router with empty prefix
 router = DefaultRouter()
-router.register(r"posts", PostViewSet, basename="posts")
-router.register("admin/posts", AdminPostViewSet, basename="admin-posts")
+router.register(r"", PostViewSet, basename="posts")  
+router.register(r"admin/posts", AdminPostViewSet, basename="admin-posts")
 
-# ✅ Nested router for comments under posts
-posts_router = routers.NestedDefaultRouter(router, "posts", lookup="post")
-posts_router.register("comments", CommentViewSet, basename="post-comments")
+# ✅ Nested router for comments
+posts_router = routers.NestedDefaultRouter(router, "", lookup="post")
+posts_router.register(r"comments", CommentViewSet, basename="post-comments")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("", include(posts_router.urls)), 
+    path("", include(posts_router.urls)),
 ]
 
 from django.conf import settings
