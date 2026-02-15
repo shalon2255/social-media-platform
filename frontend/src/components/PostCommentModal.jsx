@@ -60,38 +60,40 @@ useEffect(() => {
     }
   };
 
-  // 💬 POST COMMENT
-  const handleSend = async () => {
-    if (!text.trim()) return;
+  
+ const handleSend = async () => {
+  if (!text.trim()) return;
 
-    try {
-      setPosting(true);
-     const res = await axiosInstance.post(
-  "/comments/",
-  {
-    post: post.id,   
-    text: text,
+  try {
+    setPosting(true);
+
+    const res = await axiosInstance.post(
+      `posts/${post.id}/comments/`,
+      { text }
+    );
+
+    setComments((prev) => [res.data, ...prev]);
+    setText("");
+    onRefresh();
+
+  } catch (err) {
+    console.error("COMMENT ERROR:", err);
+    alert("Failed to post comment ❌");
+  } finally {
+    setPosting(false);
   }
-);
-      setComments((prev) => [res.data, ...prev]);
-      setText("");
-      onRefresh(); // update count in feed/profile
-    } catch {
-      alert("Failed to post comment ❌");
-    } finally {
-      setPosting(false);
-    }
-  };
+};
 
-  // ✏️ UPDATE COMMENT
+
   const handleUpdate = async (commentId) => {
     if (!editingText.trim()) return;
 
     try {
-      await axiosInstance.patch(
-        `posts/comments/${commentId}/`,
-        { text: editingText }
-      );
+          await axiosInstance.patch(
+      `comments/${commentId}/`,
+      { text: editingText }
+    );
+
 
       setComments((prev) =>
         prev.map((c) =>
@@ -107,12 +109,13 @@ useEffect(() => {
     }
   };
 
-  // 🗑 DELETE COMMENT
+
   const handleDelete = async (commentId) => {
     if (!window.confirm("Delete this comment?")) return;
 
     try {
-      await axiosInstance.delete(`posts/comments/${commentId}/`);
+      await axiosInstance.delete(`comments/${commentId}/`);
+
       setComments((prev) =>
         prev.filter((c) => c.id !== commentId)
       );

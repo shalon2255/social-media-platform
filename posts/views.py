@@ -29,7 +29,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Comment
 from .serializers import CommentSerializer
-
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -177,10 +177,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Comment.objects.all()
+        post_id = self.kwargs.get("post_pk")
+        return Comment.objects.filter(post_id=post_id)
 
+ 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        post_id = self.kwargs.get("post_pk")
+        post = get_object_or_404(Post, id=post_id)
+        serializer.save(user=self.request.user, post=post)
 
     def update(self, request, *args, **kwargs):
         comment = self.get_object()
