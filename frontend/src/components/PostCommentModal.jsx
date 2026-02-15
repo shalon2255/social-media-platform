@@ -67,64 +67,66 @@ useEffect(() => {
   try {
     setPosting(true);
 
-    const res = await axiosInstance.post(
-      `posts/${post.id}/comments/`,
-      { text }
-    );
-
+    // ✅ Capture the response from POST
+    const res = await axiosInstance.post(`posts/${post.id}/comments/`, { text });
+    
+    // Add the new comment directly
     setComments((prev) => [res.data, ...prev]);
     setText("");
     onRefresh();
 
   } catch (err) {
-    console.error("COMMENT ERROR:", err);
+    console.error("COMMENT ERROR:", err.response?.data || err.message);
     alert("Failed to post comment ❌");
   } finally {
     setPosting(false);
   }
 };
 
+const handleUpdate = async (commentId) => {
+  if (!editingText.trim()) return;
 
-  const handleUpdate = async (commentId) => {
-    if (!editingText.trim()) return;
+  try {
+    // ✅ Use response from PATCH
+    const res = await axiosInstance.patch(`comments/${commentId}/`, { 
+      text: editingText 
+    });
 
-    try {
-          await axiosInstance.patch(
-      `comments/${commentId}/`,
-      { text: editingText }
+    setComments((prev) =>
+      prev.map((c) =>
+        c.id === commentId ? res.data : c  
+      )
     );
 
-
-      setComments((prev) =>
-        prev.map((c) =>
-          c.id === commentId ? { ...c, text: editingText } : c
-        )
-      );
-
-      setEditingId(null);
-      setEditingText("");
-      setOpenMenuId(null);
-    } catch {
-      alert("Failed to update comment ❌");
-    }
-  };
+    setEditingId(null);
+    setEditingText("");
+    setOpenMenuId(null);
+  } catch (err) {
+    console.error("UPDATE ERROR:", err.response?.data || err.message);
+    alert("Failed to update comment ❌");
+  }
+};
 
 
-  const handleDelete = async (commentId) => {
-    if (!window.confirm("Delete this comment?")) return;
+const handleDelete = async (commentId) => {
+  if (!window.confirm("Delete this comment?")) return;
 
-    try {
-      await axiosInstance.delete(`comments/${commentId}/`);
+  try {
+    await axiosInstance.delete(`comments/${commentId}/`);
 
-      setComments((prev) =>
-        prev.filter((c) => c.id !== commentId)
-      );
-      setOpenMenuId(null);
-      onRefresh(); // update count
-    } catch {
-      alert("Failed to delete comment ❌");
-    }
-  };
+    setComments((prev) =>
+      prev.filter((c) => c.id !== commentId)
+    );
+    setOpenMenuId(null);
+    onRefresh();
+  } catch (err) {
+    console.error("DELETE ERROR:", err.response?.data || err.message);
+    
+ 
+    const errorMsg = err.response?.data?.detail || "Failed to delete comment ❌";
+    alert(errorMsg);
+  }
+};
 
   return (
     <>
