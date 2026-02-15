@@ -67,10 +67,14 @@ useEffect(() => {
   try {
     setPosting(true);
 
-    // ✅ Capture the response from POST
-    const res = await axiosInstance.post(`posts/${post.id}/comments/`, { text });
-    
-    // Add the new comment directly
+    const res = await axiosInstance.post(
+      `posts/${post.id}/comments/`,
+      {
+        text,
+        post: post.id  
+      }
+    );
+
     setComments((prev) => [res.data, ...prev]);
     setText("");
     onRefresh();
@@ -83,50 +87,44 @@ useEffect(() => {
   }
 };
 
-const handleUpdate = async (commentId) => {
-  if (!editingText.trim()) return;
 
-  try {
-    // ✅ Use response from PATCH
-    const res = await axiosInstance.patch(`comments/${commentId}/`, { 
-      text: editingText 
-    });
+  const handleUpdate = async (commentId) => {
+    if (!editingText.trim()) return;
 
-    setComments((prev) =>
-      prev.map((c) =>
-        c.id === commentId ? res.data : c  
-      )
-    );
-
-    setEditingId(null);
-    setEditingText("");
-    setOpenMenuId(null);
-  } catch (err) {
-    console.error("UPDATE ERROR:", err.response?.data || err.message);
-    alert("Failed to update comment ❌");
-  }
-};
+    try {
+         await axiosInstance.patch(`comments/${commentId}/`, { text: editingText })
 
 
-const handleDelete = async (commentId) => {
-  if (!window.confirm("Delete this comment?")) return;
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId ? { ...c, text: editingText } : c
+        )
+      );
 
-  try {
-    await axiosInstance.delete(`comments/${commentId}/`);
+      setEditingId(null);
+      setEditingText("");
+      setOpenMenuId(null);
+    } catch {
+      alert("Failed to update comment ❌");
+    }
+  };
 
-    setComments((prev) =>
-      prev.filter((c) => c.id !== commentId)
-    );
-    setOpenMenuId(null);
-    onRefresh();
-  } catch (err) {
-    console.error("DELETE ERROR:", err.response?.data || err.message);
-    
- 
-    const errorMsg = err.response?.data?.detail || "Failed to delete comment ❌";
-    alert(errorMsg);
-  }
-};
+
+  const handleDelete = async (commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+
+    try {
+      await axiosInstance.delete(`comments/${commentId}/`)
+
+      setComments((prev) =>
+        prev.filter((c) => c.id !== commentId)
+      );
+      setOpenMenuId(null);
+      onRefresh(); // update count
+    } catch {
+      alert("Failed to delete comment ❌");
+    }
+  };
 
   return (
     <>

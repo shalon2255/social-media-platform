@@ -66,21 +66,17 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         return {"request": self.request}
 
-    # =========================
-    # POST CREATE + LOG
-    # =========================
+ 
     def perform_create(self, serializer):
         post = serializer.save(user=self.request.user)
 
-        # 🔥 ACTIVITY LOG
+     
         ActivityLog.objects.create(
             user=self.request.user,
             action="Created a new post"
         )
 
-    # =========================
-    # COMMENTS + LOG
-    # =========================
+  
     @action(
         detail=True,
         methods=["get", "post"],
@@ -98,17 +94,16 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, post=post)
 
-        # 🔥 ACTIVITY LOG
+      
         ActivityLog.objects.create(
             user=request.user,
-            action=f"Commented on post #{post.id}"
+            action="comment",
+            message=f"Commented on post #{post.id}"
         )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # =========================
-    # LIKE / UNLIKE + LOG
-    # =========================
+
     @action(
         detail=True,
         methods=["post"],

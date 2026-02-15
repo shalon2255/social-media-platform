@@ -36,7 +36,7 @@ function formatTimeAgo(dateString) {
     if (isNaN(date.getTime())) {
       return "Just now";
     }
-console.log(post.image)
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const seconds = Math.floor(diffMs / 1000);
@@ -73,12 +73,6 @@ export default function Feed() {
   const [activePost, setActivePost] = useState(null);
   const [showSavedPopup, setShowSavedPopup] = useState(false);
 
-  // =========================
-  // FETCH POSTS
-  // =========================
-// =========================
-// FETCH POSTS
-// =========================
 const fetchPosts = async () => {
   try {
     
@@ -96,7 +90,7 @@ const fetchPosts = async () => {
   }
 };
 
-// 👇 ADD THIS
+
 useEffect(() => {
   fetchPosts();
 }, []);
