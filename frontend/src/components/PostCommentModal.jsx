@@ -92,8 +92,10 @@ useEffect(() => {
     if (!editingText.trim()) return;
 
     try {
-         await axiosInstance.patch(`comments/${commentId}/`, { text: editingText })
-
+        await axiosInstance.patch(
+  `posts/${post.id}/comments/${commentId}/`,
+  { text: editingText }
+);
 
       setComments((prev) =>
         prev.map((c) =>
@@ -111,20 +113,28 @@ useEffect(() => {
 
 
   const handleDelete = async (commentId) => {
-    if (!window.confirm("Delete this comment?")) return;
+  if (!window.confirm("Delete this comment?")) return;
 
-    try {
-      await axiosInstance.delete(`comments/${commentId}/`)
+  try {
+    console.log("Deleting comment:", commentId);
 
-      setComments((prev) =>
-        prev.filter((c) => c.id !== commentId)
-      );
-      setOpenMenuId(null);
-      onRefresh(); // update count
-    } catch {
-      alert("Failed to delete comment ❌");
-    }
-  };
+    await axiosInstance.delete(
+  `posts/${post.id}/comments/${commentId}/`
+);
+
+    setComments(prev =>
+      prev.filter(c => c.id !== commentId)
+    );
+
+    setOpenMenuId(null);
+    onRefresh();
+
+  } catch (err) {
+    console.error("DELETE ERROR:", err.response?.data || err.message);
+    alert(err.response?.data?.detail || "Failed to delete comment ❌");
+  }
+};
+
 
   return (
     <>

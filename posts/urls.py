@@ -4,12 +4,11 @@ from rest_framework_nested import routers
 from .views import PostViewSet, CommentViewSet
 from accounts.adminviews.posts import AdminPostViewSet
 
-# ✅ Create parent router with empty prefix
 router = DefaultRouter()
 router.register(r"", PostViewSet, basename="posts")  
 router.register(r"admin/posts", AdminPostViewSet, basename="admin-posts")
 
-# ✅ Nested router for comments
+
 posts_router = routers.NestedDefaultRouter(router, "", lookup="post")
 posts_router.register(r"comments", CommentViewSet, basename="post-comments")
 
