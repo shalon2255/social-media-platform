@@ -177,13 +177,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        post_id = self.kwargs.get("post_pk")
-        return Comment.objects.filter(post_id=post_id)
+        post_pk = self.kwargs.get("post_pk")  # ✅ Use post_pk
+        return Comment.objects.filter(post_id=post_pk)
 
- 
     def perform_create(self, serializer):
-        post_id = self.kwargs.get("post_pk")
-        post = get_object_or_404(Post, id=post_id)
+        post_pk = self.kwargs.get("post_pk")  # ✅ Use post_pk
+        post = get_object_or_404(Post, id=post_pk)
         serializer.save(user=self.request.user, post=post)
 
     def update(self, request, *args, **kwargs):
@@ -203,4 +202,3 @@ class CommentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
-
