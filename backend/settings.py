@@ -131,8 +131,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
+       'default': dj_database_url.config(
+        default="sqlite:///db.sqlite3"
     )
 }
 STATIC_URL = '/static/'
