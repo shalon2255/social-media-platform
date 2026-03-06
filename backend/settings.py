@@ -36,7 +36,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 import os
 import dj_database_url
 from pathlib import Path
-
+from dotenv import load_dotenv
+load_dotenv()
 # Application definition
 
 INSTALLED_APPS = [
@@ -129,13 +130,12 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATABASES = {
-       'default': dj_database_url.config(
-        default="sqlite:///db.sqlite3"
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
     )
 }
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
