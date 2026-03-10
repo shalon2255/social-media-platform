@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import UserDetailView,IsFollowingView,MeView,EditProfileView,UserSearchView
 from rest_framework.routers import DefaultRouter
 from accounts.adminviews.users import AdminUserViewSet
-
+from .views import ping
 from .views import LoginView
 from .views import AdminStatsView
 from accounts.adminviews.activity import AdminActivityView
@@ -28,6 +28,7 @@ urlpatterns = [
    path("search/", UserSearchView.as_view(), name="user-search"),
     path("login/", LoginView.as_view(), name="login"),
     path("admin/stats/", AdminStatsView.as_view()),
+    path("ping/", ping, name="ping"),
 ]
 urlpatterns += router.urls
 from django.conf import settings

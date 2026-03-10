@@ -205,3 +205,8 @@ def create_admin(request):
         )
         return Response({"status": "Admin created"})
     return Response({"status": "Admin already exists"})    
+
+from django.http import JsonResponse
+
+def ping(request):
+    return JsonResponse({"status": "ok"})   
